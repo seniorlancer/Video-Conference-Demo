@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import {Button} from '@material-ui/core/';
+import { Link as RouterLink, withRouter } from 'react-router-dom';
 
 const useStyle = makeStyles((theme) => ({
     root: {
@@ -77,4 +78,4 @@ Conferences.prototype = {
 
 }
 
-export default Conferences
+export default withRouter(Conferences);

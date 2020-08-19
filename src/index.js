@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import Conferences from './Conferences';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
