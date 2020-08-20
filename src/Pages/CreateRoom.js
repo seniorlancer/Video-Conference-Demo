@@ -34,6 +34,7 @@ const useStyles = makeStyles(theme => ({
 
 const CreateRoom = (props) => {
     const classes = useStyles();
+    const {history} = props;
 
     const [name, setName] = useState('');
     const [roomname, setRoomName] = useState('');
@@ -52,7 +53,8 @@ const CreateRoom = (props) => {
     }
 
     const clickCreateRoom = () => {
-
+        history.push('/conferences');
+        window.location.reload();
     }
 
     return(
@@ -71,7 +73,7 @@ const CreateRoom = (props) => {
 }
 
 CreateRoom.prototype = {
-
+    
 }
 
 export default withRouter(CreateRoom);

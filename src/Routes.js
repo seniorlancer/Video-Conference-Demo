@@ -9,13 +9,13 @@ import {
 const Routes = () => {
     return(
         <Switch>
-            <Redirect
+            {/* <Redirect
                 exact
                 from="/"
                 to="/createroom"
-            /> 
-            <Route path="/createroom" exact><CreateRoom /></Route>
-            <Route path="/conferences" exact><Conferences /></Route>
+            />  */}
+            <Route exact path="/" component={CreateRoom} />
+            <Route exact path="/conferences" component={Conferences} />
         </Switch>
     )
 }
