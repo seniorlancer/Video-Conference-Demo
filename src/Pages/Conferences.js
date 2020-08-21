@@ -14,10 +14,6 @@ const useStyle = makeStyles((theme) => ({
         width: '100%',
         height: '100%'
     },
-    div_jitsi: {
-        height: '0px',
-        width: '0px'
-    }
 }));
 
 const Conferences = (props) => {
@@ -52,9 +48,13 @@ const Conferences = (props) => {
         openBridgeChannel: true
     };
 
+    const initOptions = {
+        enableAnalyticsLogging: false
+    }
+
     useEffect(() => {
         if(window.JitsiMeetJS) {
-            window.JitsiMeetJS.init();
+            window.JitsiMeetJS.init(initOptions);
             if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
                 console.log("enumerateDevices() not supported.");
                 return;
@@ -72,6 +72,11 @@ const Conferences = (props) => {
 
             
 
+            window.JitsiMeetJS.createLocalTracks({devices: ['audio', 'video']})
+                .then(onLocalTracks)
+                .catch(error=> {
+                    console.log(error)
+                });
             // window.JitsiMeetJS.mediaDevices.enumerateDevices((devices) => {
             //     setDevices(devices);
             // });
@@ -79,34 +84,7 @@ const Conferences = (props) => {
         }
     }, []);
 
-    useEffect(() => {
-        if(devices == null) 
-            return
-        
-        
-
-        const options = {
-            roomName: 'roomName',
-            width: '100%',
-            height: 'auto',
-            configOverwrite: {
-                disableDeepLinking: true
-            },
-        };
-
-        if (window.JitsiMeetExternalAPI) {
-            options.parentNode = document.getElementById('meet');
-            // eslint-disable-next-line no-undef
-            // setJitsi(new JitsiMeetExternalAPI(domain, options));
-            console.log("Success to connect Jitsi server");
-        } else {
-            setJitsi(null);
-            console.log("Fail to connect Jitsi Server");
-        }
-    }, [devices]);
-
     const onConnectionSuccess = () => {
-        console.log('############################');
         var roomName = 'conference';
         
         room = connection.initJitsiConference('conference', confOptions);
@@ -144,10 +122,40 @@ const Conferences = (props) => {
         connection.removeEventListener(window.JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, disconnect);
     }
 
+    const onLocalTracks = (tracks) => {
+        localTracks = tracks
+        localTracks.map((localTrack, index) => {
+            localTrack.addEventListener(
+                window.JitsiMeetJS.events.track.TRACK_AUDIO_LEVEL_CHANGED,
+                audioLevel => console.log(`Audio Level local: ${audioLevel}`));
+            localTrack.addEventListener(
+                window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
+                () => console.log('local track muted'));
+            localTrack.addEventListener(
+                window.JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED,
+                () => console.log('local track stoped'));
+            localTrack.addEventListener(window.JitsiMeetJS.events.track.TRACK_AUDIO_OUTPUT_CHANGED,
+                deviceId =>
+                    console.log(`track audio output device was changed to ${deviceId}`));
+            if (localTrack.getType() === 'video') {
+                $('body').append(`<video autoplay='1' id='localVideo${index}' />`);
+                localTrack.attach($(`#localVideo${index}`)[0]);
+            } else {
+                $('body').append(
+                    `<audio autoplay='1' muted='true' id='localAudio${index}' />`);
+                localTrack.attach($(`#localAudio${index}`)[0]);
+            }
+            if (isJoined) {
+                room.addTrack(localTrack);
+            }
+        })
+    }
+
     function onRemoteTrack(track) {
         if (track.isLocal()) {
             return;
         }
+        console.log('=============');
         const participant = track.getParticipantId();
     
         if (!remoteTracks[participant]) {
@@ -198,7 +206,6 @@ const Conferences = (props) => {
 
     return(
         <div  className={classes.root}>
-            <div id='meet' className={classes.div_jitsi}/>
             <div>
                 <Button >Send Chat</Button>
             </div>
