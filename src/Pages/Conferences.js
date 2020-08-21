@@ -7,12 +7,12 @@ import * as $ from 'jquery';
 
 const useStyle = makeStyles((theme) => ({
     root: {
-        minHeight: '100vh',
+        // minHeight: '100vh',
         display: 'flex',
         textAlign: "center",
         justifyContent: "center",
         width: '100%',
-        height: '100%'
+        // height: '100%'
     },
 }));
 
@@ -36,7 +36,7 @@ const Conferences = (props) => {
         },
         bosh: 'https://meet.jit.si/http-bind', // FIXME: use xep-0156 for that
         clientNode: "https://jitsi.org/jitsimeet",
-        // useStunTurn: true
+        useStunTurn: true
     };
 
     const confOptions = {
@@ -71,7 +71,7 @@ const Conferences = (props) => {
                 .then(onLocalTracks)
                 .catch(error=> {
                     console.log(error)
-                });
+            });
             // window.JitsiMeetJS.mediaDevices.enumerateDevices((devices) => {
             //     setDevices(devices);
             // });
@@ -133,10 +133,10 @@ const Conferences = (props) => {
                 deviceId =>
                     console.log(`track audio output device was changed to ${deviceId}`));
             if (localTrack.getType() === 'video') {
-                $('body').append(`<video autoplay='1' id='localVideo${index}' />`);
+                document.getElementsByTagName('body').append(`<video autoplay='1' id='localVideo${index}' />`);
                 localTrack.attach($(`#localVideo${index}`)[0]);
             } else {
-                $('body').append(
+                document.getElementsByTagName('body').append(
                     `<audio autoplay='1' muted='true' id='localAudio${index}' />`);
                 localTrack.attach($(`#localAudio${index}`)[0]);
             }
