@@ -18,11 +18,6 @@ const useStyle = makeStyles((theme) => ({
 
 const Conferences = (props) => {
     const classes = useStyle();
-
-    const [jitsi, setJitsi] = useState(null)
-    const [devices, setDevices] = useState(null);
-
-    const domain = 'meet.jit.si';
     
     let room = null;
     let isJoined = false;
