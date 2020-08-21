@@ -1,19 +1,29 @@
 import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/styles';
 import {Button} from '@material-ui/core/';
 import { Link as RouterLink, withRouter } from 'react-router-dom';
 import * as $ from 'jquery';
+import ControlArea from '../Components/ControlArea';
 
 const useStyle = makeStyles((theme) => ({
     root: {
-        // minHeight: '100vh',
+        minHeight: '100vh',
         display: 'flex',
-        textAlign: "center",
-        justifyContent: "center",
+        background: '#1d1d1d',
         width: '100%',
-        // height: '100%'
+        height: '100%',
+        
     },
+    control_area: {
+        width: '100%',
+        height: '50px',
+        bottom: 0,
+        position: 'absolute',
+        marginBottom: '50px',
+        display: 'flex',
+        justifyContent: 'center'
+    }
 }));
 
 const Conferences = (props) => {
@@ -201,8 +211,8 @@ const Conferences = (props) => {
 
     return(
         <div  className={classes.root}>
-            <div>
-                <Button >Send Chat</Button>
+            <div className={classes.control_area}>
+                <ControlArea />
             </div>
             
         </div>
