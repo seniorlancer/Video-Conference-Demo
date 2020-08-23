@@ -16,14 +16,12 @@ const useStyles = makeStyles((theme) => ({
     div_video_list: {
         height: '100%',
         width: '400px',
-        background: '#FF0000',
         position: 'absolute',
         right: 0
     }
 }));
 
 const VideoNormalView = (props) => {
-    const {localTracks} = props
     const classes = useStyles();
 
     return(

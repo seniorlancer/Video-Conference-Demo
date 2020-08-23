@@ -236,7 +236,7 @@ const Conferences = (props) => {
     return(
         <div  className={classes.root}>
             <div className={classes.video_area}>
-                <VideoNormalView localTracks={localTracks}/>
+                <VideoNormalView />
             </div>
             <div className={classes.control_area}>
                 <ControlArea onClickChat={handleClickChat} />
