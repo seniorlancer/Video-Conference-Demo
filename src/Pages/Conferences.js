@@ -166,6 +166,7 @@ const Conferences = (props) => {
                     console.log(`track audio output device was changed to ${deviceId}`));
             if (localTrack.getType() === 'video') {
                 localTrack.attach($(`#localVideo`)[0]);
+                localTrack.attach($(`#localSmallVideo`)[0]);
             } else {
                 localTrack.attach($(`#localAudio`)[0]);
             }
@@ -177,12 +178,8 @@ const Conferences = (props) => {
     }
 
     function onRemoteTrack(track) {
-        if (track.isLocal()) {
-            return;
-        }
-        console.log('=============');
         const participant = track.getParticipantId();
-    
+        console.log('##########' + participant);
         if (!remoteTracks[participant]) {
             remoteTracks[participant] = [];
         }
@@ -200,13 +197,14 @@ const Conferences = (props) => {
                     `track audio output device was changed to ${deviceId}`));
         const id = participant + track.getType() + idx;
     
-        // if (track.getType() === 'video') {
-        //     $('body').append(
-        //         `<video autoplay='1' id='${participant}video${idx}' />`);
-        // } else {
-        //     $('body').append(
-        //         `<audio autoplay='1' id='${participant}audio${idx}' />`);
-        // }
+        if (track.getType() === 'video') {
+            $('body').append(
+                `<video autoplay='1' id='${participant}video${idx}' />`
+                );
+        } else {
+            $('body').append(
+                `<audio autoplay='1' id='${participant}audio${idx}' />`);
+        }
         track.attach($(`#${id}`)[0]);
     }
 
