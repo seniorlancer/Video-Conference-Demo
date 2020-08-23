@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
-import {Button} from '@material-ui/core/';
+import {Drawer} from '@material-ui/core/';
 import { Link as RouterLink, withRouter } from 'react-router-dom';
 import * as $ from 'jquery';
 import ControlArea from '../Components/ControlArea';
+import VideoNormalView from '../Components/VideoNormalView';
 
 const useStyle = makeStyles((theme) => ({
     root: {
@@ -17,23 +18,44 @@ const useStyle = makeStyles((theme) => ({
     },
     control_area: {
         width: '100%',
-        height: '50px',
         bottom: 0,
         position: 'absolute',
-        marginBottom: '50px',
+        marginBottom: '30px',
         display: 'flex',
         justifyContent: 'center'
+    },
+    show_chat: {
+        width: '400px',
+        height: '100%',
+        position: 'absolute',
+        left: 0,
+        visibility: 'visible',
+        transition: '0.6s',
+        background: '#FFFFFF'
+    },
+    hide_chat: {
+        width: '400px',
+        height: '100%',
+        position: 'absolute',
+        left: '-100%',
+        visibility: 'hide',
+        transition: '0.6s',
+        background: '#FFFFFF'
+    },
+    video_area: {
+        height: '100%',
+        width: '100%',
+        position: 'absolute',
     }
 }));
 
 const Conferences = (props) => {
     const classes = useStyle();
-    
+    const [showChat, setShowChat] = useState(false);
+    const [localTracks, setLocalTracks] = useState([]);
     let room = null;
     let isJoined = false;
     let connection = null;
-
-    let localTracks = [];
 
     const remoteTracks = {};
 
@@ -128,8 +150,8 @@ const Conferences = (props) => {
     }
 
     const onLocalTracks = (tracks) => {
-        localTracks = tracks
-        localTracks.map((localTrack, index) => {
+        const localtracks = tracks
+        localtracks.map((localTrack, index) => {
             localTrack.addEventListener(
                 window.JitsiMeetJS.events.track.TRACK_AUDIO_LEVEL_CHANGED,
                 audioLevel => console.log(`Audio Level local: ${audioLevel}`));
@@ -143,17 +165,15 @@ const Conferences = (props) => {
                 deviceId =>
                     console.log(`track audio output device was changed to ${deviceId}`));
             if (localTrack.getType() === 'video') {
-                document.getElementsByTagName('body').append(`<video autoplay='1' id='localVideo${index}' />`);
-                localTrack.attach($(`#localVideo${index}`)[0]);
+                localTrack.attach($(`#localVideo`)[0]);
             } else {
-                document.getElementsByTagName('body').append(
-                    `<audio autoplay='1' muted='true' id='localAudio${index}' />`);
-                localTrack.attach($(`#localAudio${index}`)[0]);
+                localTrack.attach($(`#localAudio`)[0]);
             }
             if (isJoined) {
                 room.addTrack(localTrack);
             }
         })
+        setLocalTracks(localtracks);
     }
 
     function onRemoteTrack(track) {
@@ -180,13 +200,13 @@ const Conferences = (props) => {
                     `track audio output device was changed to ${deviceId}`));
         const id = participant + track.getType() + idx;
     
-        if (track.getType() === 'video') {
-            $('body').append(
-                `<video autoplay='1' id='${participant}video${idx}' />`);
-        } else {
-            $('body').append(
-                `<audio autoplay='1' id='${participant}audio${idx}' />`);
-        }
+        // if (track.getType() === 'video') {
+        //     $('body').append(
+        //         `<video autoplay='1' id='${participant}video${idx}' />`);
+        // } else {
+        //     $('body').append(
+        //         `<audio autoplay='1' id='${participant}audio${idx}' />`);
+        // }
         track.attach($(`#${id}`)[0]);
     }
 
@@ -209,12 +229,22 @@ const Conferences = (props) => {
         }
     }
 
+    const handleClickChat = () => {
+        setShowChat(!showChat);
+    }
+
     return(
         <div  className={classes.root}>
-            <div className={classes.control_area}>
-                <ControlArea />
+            <div className={classes.video_area}>
+                <VideoNormalView localTracks={localTracks}/>
             </div>
-            
+            <div className={classes.control_area}>
+                <ControlArea onClickChat={handleClickChat} />
+            </div>
+            {
+                showChat ? <div className={classes.show_chat}>Hello What are you doing?</div> : 
+                            <div className={classes.hide_chat}>Hello What are you doing?</div>
+            }
         </div>
     )
 }

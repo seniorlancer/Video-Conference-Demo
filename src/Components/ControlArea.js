@@ -85,6 +85,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ControlArea = (props) => {
+    const {onClickChat} = props;
+
     const classes = useStyles();
 
     const [mic, setMic] = useState(false);
@@ -100,7 +102,7 @@ const ControlArea = (props) => {
 
     return(
         <div className={classes.root}>
-            <ChatBubbleOutlineIcon className={classes.style_chat} />
+            <ChatBubbleOutlineIcon className={classes.style_chat} onClick={()=>props.onClickChat()} />
             <PanToolIcon className={classes.style_hand} />
             <div className={classes.white_circle} onClick={onClickMic} >
                 { mic ? <MicIcon className={classes.styles_icon_device}/> : <MicOffIcon className={classes.styles_icon_device}/> }
