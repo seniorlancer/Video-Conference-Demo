@@ -184,19 +184,6 @@ const Conferences = (props) => {
         if (!remoteTracks[participant]) {
             remoteTracks[participant] = [];
         }
-        const idx = remoteTracks[participant].push(track);
-        
-        const id = identify + idx;
-        track.addEventListener(window.JitsiMeetJS.events.track.TRACK_AUDIO_LEVEL_CHANGED,
-            audioLevel => console.log(`Audio Level remote: ${audioLevel}`));
-        track.addEventListener(window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
-            () => console.log('remote track muted'));
-        track.addEventListener(window.JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED,
-            () => console.log('remote track stoped'));
-        track.addEventListener(window.JitsiMeetJS.events.track.TRACK_AUDIO_OUTPUT_CHANGED,
-            deviceId =>
-                console.log(
-                    `track audio output device was changed to ${deviceId}`));
     
         if (track.getType() === 'video') {
             $('#remoteVideos').append(
@@ -211,8 +198,11 @@ const Conferences = (props) => {
 
     const onRemoveTrack = (track) => {
         const participant = track.getParticipantId();
-        const idx = remoteTracks[participant].indexOf(track);
-        $(`#${idx}`).remove();
+
+        const identify = participant + track.getType();
+        console.log('22222222222' + identify);
+        track.detach($(`#${identify}`)[0]);
+        $(`#${identify}`).remove();
     }
 
     function onConferenceJoined() {
