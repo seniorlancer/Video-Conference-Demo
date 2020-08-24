@@ -200,7 +200,7 @@ const Conferences = (props) => {
 
         const identify = participant + track.getType();
         console.log('22222222222' + identify);
-        track.detach($(`#${identify}`)[0]);
+        track.dispose();
         $(`#${identify}`).remove();
     }
 
@@ -257,15 +257,16 @@ const Conferences = (props) => {
     }
 
     const handleClickScreenShare = () => {
-        isVideo = !isVideo;
-        if(localTracks[1]) {
-            localTracks[1].dispose();
-            localTracks.pop();
-        }
+        
         window.JitsiMeetJS.createLocalTracks({
             devices: [ isVideo ? 'video' : 'desktop' ]
         })
         .then(tracks => {
+            isVideo = !isVideo;
+            if(localTracks[1]) {
+                localTracks[1].dispose();
+                localTracks.pop();
+            }
             localTracks.push(tracks[0]);
             localTracks[1].addEventListener(
                 window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
