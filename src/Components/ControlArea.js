@@ -94,10 +94,12 @@ const ControlArea = (props) => {
 
     const onClickMic = () => {
         setMic(!mic);
+        props.onClickMic();
     }
 
     const onClickCam = () => {
         setCam(!cam);
+        props.onClickCamera();
     }
 
     return(

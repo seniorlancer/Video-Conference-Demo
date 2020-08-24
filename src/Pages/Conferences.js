@@ -108,7 +108,7 @@ const Conferences = (props) => {
     }, []);
 
     const onConnectionSuccess = () => {        
-        room = connection.initJitsiConference('conference', confOptions);
+        room = connection.initJitsiConference('conference1234', confOptions);
 
         room.on(window.JitsiMeetJS.events.conference.TRACK_ADDED, onRemoteTrack);
         room.on(window.JitsiMeetJS.events.conference.TRACK_REMOVED, onRemoveTrack);
@@ -227,13 +227,37 @@ const Conferences = (props) => {
         setShowChat(!showChat);
     }
 
+    const handleClickCamera = () => {
+        localTracks.map((localTrack) => {
+            if(localTrack.getType() === 'video') {
+                if(localTrack.isMuted()) {
+                    localTrack.unmute();
+                } else {
+                    localTrack.mute();
+                }
+            }
+        });
+    }
+
+    const handleClickMic = () => {
+        localTracks.map((localTrack) => {
+            if(localTrack.getType() === 'audio') {
+                if(localTrack.isMuted()) {
+                    localTrack.unmute();
+                } else {
+                    localTrack.mute();
+                }
+            }
+        });
+    }
+
     return(
         <div  className={classes.root}>
             <div className={classes.video_area}>
                 <VideoNormalView />
             </div>
             <div className={classes.control_area}>
-                <ControlArea onClickChat={handleClickChat} />
+                <ControlArea onClickChat={handleClickChat} onClickCamera={handleClickCamera} onClickMic={handleClickMic} />
             </div>
             {
                 showChat ? <div className={classes.show_chat}>Hello What are you doing?</div> : 
