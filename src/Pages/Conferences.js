@@ -73,7 +73,7 @@ const Conferences = (props) => {
     };
 
     const confOptions = {
-        openBridgeChannel: true
+        openBridgeChannel: true,
     };
 
     const initOptions = {
@@ -109,13 +109,15 @@ const Conferences = (props) => {
 
     const onConnectionSuccess = () => {        
         room = connection.initJitsiConference('conference1234', confOptions);
-
         room.on(window.JitsiMeetJS.events.conference.TRACK_ADDED, onRemoteTrack);
         room.on(window.JitsiMeetJS.events.conference.TRACK_REMOVED, onRemoveTrack);
-
+        room.on(window.JitsiMeetJS.events.conference.DISPLAY_NAME_CHANGED, onChangeName);
         room.on(window.JitsiMeetJS.events.conference.CONFERENCE_JOINED, onConferenceJoined);
-        room.on(window.JitsiMeetJS.events.conference.USER_JOINED, id => {
-            remoteTracks[id] = [];
+        room.on(window.JitsiMeetJS.events.conference.USER_JOINED, (id, user) => {
+            console.log("id-111111111111" + id);
+            console.log("name-111111111111" + user.getDisplayName())
+            console.log("role-111111111111" + user.getRole())
+
         });
 
         room.on(window.JitsiMeetJS.events.conference.USER_LEFT, onUserLeft);
@@ -125,6 +127,7 @@ const Conferences = (props) => {
         room.on(window.JitsiMeetJS.events.conference.DISPLAY_NAME_CHANGED, (userID, displayName) => console.log(`${userID} - ${displayName}`));
         room.on(window.JitsiMeetJS.events.conference.TRACK_AUDIO_LEVEL_CHANGED, (userID, audioLevel) => console.log(`${userID} - ${audioLevel}`));
         room.on(window.JitsiMeetJS.events.conference.PHONE_NUMBER_CHANGED,() => console.log(`${room.getPhoneNumber()} - ${room.getPhonePin()}`));
+        room.setDisplayName('Hello Hi');
 
         room.join();
     }
@@ -173,7 +176,6 @@ const Conferences = (props) => {
         }
 
         const participant = track.getParticipantId();
-
         const identify = participant + track.getType();
 
         if(listParticipant.indexOf(identify) !== -1) {
@@ -181,10 +183,6 @@ const Conferences = (props) => {
         }
         listParticipant.push(identify);
 
-        if (!remoteTracks[participant]) {
-            remoteTracks[participant] = [];
-        }
-    
         if (track.getType() === 'video') {
             $('#remoteVideos').append(
                 `<video autoplay='1' style='margin-bottom: 10px;' id='${identify}' height='150' width='200'/>`
@@ -205,14 +203,20 @@ const Conferences = (props) => {
         $(`#${identify}`).remove();
     }
 
+    const onChangeName = (value) => {
+
+    }
+
     function onConferenceJoined() {
         isJoined = true;
         localTracks.map((localTrack) => {
             room.addTrack(localTrack);
+            room.setDisplayName('Hello Hi');
         });
     }
 
     function onUserLeft(id) {
+        console.log('1111111111' + id);
         if (!remoteTracks[id]) {
             return;
         }
