@@ -27,10 +27,12 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         height: 'calc(100% - 180px)',
         marginTop: '30px',
-        background: '#FF0000',
-        overflowY: 'auto',
-        display: 'grid'
-    }
+        overflowY: 'scroll',
+        display: 'flex',
+        flex: 1,
+        flexDirection: 'column',
+        
+    },
 }));
 
 const VideoNormalView = (props) => {
@@ -38,10 +40,10 @@ const VideoNormalView = (props) => {
 
     return(
         <div className={classes.root}>
-            <video className={classes.main_video} autoPlay='1' id='localVideo' playsInline height=''/>
+            <video className={classes.main_video} autoPlay='1' id='localVideo' playsInline />
             <audio autoPlay='1' muted='1' id='localAudio' />
             <div className={classes.div_video_list} >
-                <video className={classes.tile_my_video} autoPlay='1' id='localSmallVideo' playsInline height='150' />
+                <video className={classes.tile_my_video} autoPlay='1' id='localSmallVideo' playsInline height='150' width='200'/>
                 <audio autoPlay='1' muted='1' id='localSmallAudio' />
                 <div className={classes.div_remote_videos} id='remoteVideos' />
              </div>

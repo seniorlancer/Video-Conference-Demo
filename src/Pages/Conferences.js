@@ -6,6 +6,7 @@ import { Link as RouterLink, withRouter } from 'react-router-dom';
 import * as $ from 'jquery';
 import ControlArea from '../Components/ControlArea';
 import VideoNormalView from '../Components/VideoNormalView';
+import './conference.css';
 
 const useStyle = makeStyles((theme) => ({
     root: {
@@ -56,8 +57,8 @@ const Conferences = (props) => {
     let room = null;
     let isJoined = false;
     let connection = null;
-
     let remoteTracks = {};
+    let listParticipant = [];
 
     const options = {
         // serviceUrl:'wss://meet.jit.si/xmpp-websocket',
@@ -110,13 +111,10 @@ const Conferences = (props) => {
         room = connection.initJitsiConference('conference', confOptions);
 
         room.on(window.JitsiMeetJS.events.conference.TRACK_ADDED, onRemoteTrack);
-        room.on(window.JitsiMeetJS.events.conference.TRACK_REMOVED, track => {
-            console.log(`track removed!!!${track}`);
-        });
+        room.on(window.JitsiMeetJS.events.conference.TRACK_REMOVED, onRemoveTrack);
 
         room.on(window.JitsiMeetJS.events.conference.CONFERENCE_JOINED, onConferenceJoined);
         room.on(window.JitsiMeetJS.events.conference.USER_JOINED, id => {
-            console.log('user join==========' + id);
             remoteTracks[id] = [];
         });
 
@@ -169,16 +167,26 @@ const Conferences = (props) => {
         })
     }
 
-    function onRemoteTrack(track) {
+    const onRemoteTrack = (track) => {
         if (track.isLocal()) {
             return;
         }
+
         const participant = track.getParticipantId();
+
+        const identify = participant + track.getType();
+
+        if(listParticipant.indexOf(identify) !== -1) {
+            $(`#${identify}`).remove();
+        }
+        listParticipant.push(identify);
+
         if (!remoteTracks[participant]) {
             remoteTracks[participant] = [];
         }
         const idx = remoteTracks[participant].push(track);
-    
+        
+        const id = identify + idx;
         track.addEventListener(window.JitsiMeetJS.events.track.TRACK_AUDIO_LEVEL_CHANGED,
             audioLevel => console.log(`Audio Level remote: ${audioLevel}`));
         track.addEventListener(window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
@@ -189,29 +197,32 @@ const Conferences = (props) => {
             deviceId =>
                 console.log(
                     `track audio output device was changed to ${deviceId}`));
-        const id = participant + track.getType() + idx;
     
         if (track.getType() === 'video') {
             $('#remoteVideos').append(
-                `<video autoplay='1' id='${participant}video${idx}' height='150'/>`
-                );
+                `<video autoplay='1' style='margin-bottom: 10px;' id='${identify}' height='150' width='200'/>`
+            );
         } else {
             $('#remoteVideos').append(
-                `<audio autoplay='1' id='${participant}audio${idx}' />`);
+                `<audio autoplay='1' id='${identify}' />`);
         }
-        track.attach($(`#${id}`)[0]);
+        track.attach($(`#${identify}`)[0]);
+    }
+
+    const onRemoveTrack = (track) => {
+        const participant = track.getParticipantId();
+        const idx = remoteTracks[participant].indexOf(track);
+        $(`#${idx}`).remove();
     }
 
     function onConferenceJoined() {
         isJoined = true;
-        console.log("1111111111111" + localTracks);
         localTracks.map((localTrack) => {
             room.addTrack(localTrack);
         });
     }
 
     function onUserLeft(id) {
-        console.log('3333333333');
         if (!remoteTracks[id]) {
             return;
         }
