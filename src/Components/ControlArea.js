@@ -115,7 +115,7 @@ const ControlArea = (props) => {
             <div className={classes.white_circle} onClick={onClickCam} >
                 { cam ?  <VideocamIcon className={classes.styles_icon_device}/> : <VideocamOffIcon className={classes.styles_icon_device}/>}
             </div>
-            <ScreenShareIcon className={classes.style_screenshare} />
+            <ScreenShareIcon className={classes.style_screenshare} onClick={()=>props.onClickScreenShare()}/>
             <AppsIcon className={classes.style_multiview} />
         </div>
     )

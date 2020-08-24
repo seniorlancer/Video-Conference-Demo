@@ -59,6 +59,7 @@ const Conferences = (props) => {
     let connection = null;
     let remoteTracks = {};
     let listParticipant = [];
+    let isVideo = true;
 
     const options = {
         // serviceUrl:'wss://meet.jit.si/xmpp-websocket',
@@ -255,13 +256,35 @@ const Conferences = (props) => {
         });
     }
 
+    const handleClickScreenShare = () => {
+        isVideo = !isVideo;
+        if(localTracks[1]) {
+            localTracks[1].dispose();
+            localTracks.pop();
+        }
+        window.JitsiMeetJS.createLocalTracks({
+            devices: [ isVideo ? 'video' : 'desktop' ]
+        })
+        .then(tracks => {
+            localTracks.push(tracks[0]);
+            localTracks[1].addEventListener(
+                window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
+                () => console.log('local track muted'));
+            localTracks[1].addEventListener(window.JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED, handleClickScreenShare);
+            localTracks[1].attach($(`#localVideo`)[0]);
+            localTracks[1].attach($(`#localSmallVideo`)[0]);
+            room.addTrack(localTracks[1]);
+        })
+        .catch(error => console.log(error));
+    }
+
     return(
         <div  className={classes.root}>
             <div className={classes.video_area}>
                 <VideoNormalView />
             </div>
             <div className={classes.control_area}>
-                <ControlArea onClickChat={handleClickChat} onClickCamera={handleClickCamera} onClickMic={handleClickMic} />
+                <ControlArea onClickChat={handleClickChat} onClickCamera={handleClickCamera} onClickMic={handleClickMic} onClickScreenShare={handleClickScreenShare}/>
             </div>
             {
                 showChat ? <div className={classes.show_chat}>Hello What are you doing?</div> : 
