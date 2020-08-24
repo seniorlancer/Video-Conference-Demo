@@ -52,23 +52,23 @@ const useStyle = makeStyles((theme) => ({
 const Conferences = (props) => {
     const classes = useStyle();
     const [showChat, setShowChat] = useState(false);
-    const [localTracks, setLocalTracks] = useState([]);
+    let localTracks = [];
     let room = null;
     let isJoined = false;
     let connection = null;
 
-    const remoteTracks = {};
+    let remoteTracks = {};
 
     const options = {
         // serviceUrl:'wss://meet.jit.si/xmpp-websocket',
         hosts: {
             domain: 'meet.jit.si',
             muc: 'conference.meet.jit.si', // FIXME: use XEP-0030
-            focus: 'focus.meet.jit.si',
+            // focus: 'focus.meet.jit.si',
         },
         bosh: 'https://meet.jit.si/http-bind', // FIXME: use xep-0156 for that
         clientNode: "https://jitsi.org/jitsimeet",
-        useStunTurn: true
+        // useStunTurn: true
     };
 
     const confOptions = {
@@ -76,12 +76,11 @@ const Conferences = (props) => {
     };
 
     const initOptions = {
-        enableAnalyticsLogging: false
+        disableAudioLevels: true
     }
 
     useEffect(() => {
         if(window.JitsiMeetJS) {
-            window.JitsiMeetJS.init(initOptions);
             if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
                 console.log("enumerateDevices() not supported.");
                 return;
@@ -89,12 +88,12 @@ const Conferences = (props) => {
 
             window.$ = $
             window.jQuery = $
+            window.JitsiMeetJS.init(initOptions);
             connection = new window.JitsiMeetJS.JitsiConnection(null, null, options);
 
             connection.addEventListener(window.JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, onConnectionSuccess);
             connection.addEventListener(window.JitsiMeetJS.events.connection.CONNECTION_FAILED, onConnectionFailed);
             connection.addEventListener(window.JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, disconnect);
-
             connection.connect();
 
             
@@ -104,16 +103,10 @@ const Conferences = (props) => {
                 .catch(error=> {
                     console.log(error)
             });
-            // window.JitsiMeetJS.mediaDevices.enumerateDevices((devices) => {
-            //     setDevices(devices);
-            // });
-            
         }
     }, []);
 
-    const onConnectionSuccess = () => {
-        var roomName = 'conference';
-        
+    const onConnectionSuccess = () => {        
         room = connection.initJitsiConference('conference', confOptions);
 
         room.on(window.JitsiMeetJS.events.conference.TRACK_ADDED, onRemoteTrack);
@@ -123,7 +116,7 @@ const Conferences = (props) => {
 
         room.on(window.JitsiMeetJS.events.conference.CONFERENCE_JOINED, onConferenceJoined);
         room.on(window.JitsiMeetJS.events.conference.USER_JOINED, id => {
-            console.log('user join');
+            console.log('user join==========' + id);
             remoteTracks[id] = [];
         });
 
@@ -143,15 +136,14 @@ const Conferences = (props) => {
     }
 
     const disconnect = () => {
-        console.log('disconnect!');
         connection.removeEventListener(window.JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, onConnectionSuccess);
         connection.removeEventListener(window.JitsiMeetJS.events.connection.CONNECTION_FAILED, onConnectionFailed);
         connection.removeEventListener(window.JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, disconnect);
     }
 
     const onLocalTracks = (tracks) => {
-        const localtracks = tracks
-        localtracks.map((localTrack, index) => {
+        localTracks = tracks
+        localTracks.map((localTrack, index) => {
             localTrack.addEventListener(
                 window.JitsiMeetJS.events.track.TRACK_AUDIO_LEVEL_CHANGED,
                 audioLevel => console.log(`Audio Level local: ${audioLevel}`));
@@ -169,17 +161,19 @@ const Conferences = (props) => {
                 localTrack.attach($(`#localSmallVideo`)[0]);
             } else {
                 localTrack.attach($(`#localAudio`)[0]);
+                localTrack.attach($(`#localSmallAudio`)[0]);
             }
             if (isJoined) {
                 room.addTrack(localTrack);
             }
         })
-        setLocalTracks(localtracks);
     }
 
     function onRemoteTrack(track) {
+        if (track.isLocal()) {
+            return;
+        }
         const participant = track.getParticipantId();
-        console.log('##########' + participant);
         if (!remoteTracks[participant]) {
             remoteTracks[participant] = [];
         }
@@ -198,11 +192,11 @@ const Conferences = (props) => {
         const id = participant + track.getType() + idx;
     
         if (track.getType() === 'video') {
-            $('body').append(
-                `<video autoplay='1' id='${participant}video${idx}' />`
+            $('#remoteVideos').append(
+                `<video autoplay='1' id='${participant}video${idx}' height='150'/>`
                 );
         } else {
-            $('body').append(
+            $('#remoteVideos').append(
                 `<audio autoplay='1' id='${participant}audio${idx}' />`);
         }
         track.attach($(`#${id}`)[0]);
@@ -210,13 +204,14 @@ const Conferences = (props) => {
 
     function onConferenceJoined() {
         isJoined = true;
-        for (let i = 0; i < localTracks.length; i++) {
-            room.addTrack(localTracks[i]);
-        }
+        console.log("1111111111111" + localTracks);
+        localTracks.map((localTrack) => {
+            room.addTrack(localTrack);
+        });
     }
 
     function onUserLeft(id) {
-        console.log('user left');
+        console.log('3333333333');
         if (!remoteTracks[id]) {
             return;
         }

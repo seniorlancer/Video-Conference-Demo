@@ -24,7 +24,12 @@ const useStyles = makeStyles((theme) => ({
         transform: 'scaleX(-1)',
     },
     div_remote_videos: {
+        width: '100%',
+        height: 'calc(100% - 180px)',
         marginTop: '30px',
+        background: '#FF0000',
+        overflowY: 'auto',
+        display: 'grid'
     }
 }));
 
@@ -37,7 +42,8 @@ const VideoNormalView = (props) => {
             <audio autoPlay='1' muted='1' id='localAudio' />
             <div className={classes.div_video_list} >
                 <video className={classes.tile_my_video} autoPlay='1' id='localSmallVideo' playsInline height='150' />
-                <div className={classes.div_remote_videos} id='#remoteVideos' />
+                <audio autoPlay='1' muted='1' id='localSmallAudio' />
+                <div className={classes.div_remote_videos} id='remoteVideos' />
              </div>
         </div>
     )
