@@ -105,7 +105,7 @@ const ControlArea = (props) => {
     return(
         <div className={classes.root}>
             <ChatBubbleOutlineIcon className={classes.style_chat} onClick={()=>props.onClickChat()} />
-            <PanToolIcon className={classes.style_hand} />
+            <PanToolIcon className={classes.style_hand} onClick={()=>props.onClickHand()}/>
             <div className={classes.white_circle} onClick={onClickMic} >
                 { mic ? <MicIcon className={classes.styles_icon_device}/> : <MicOffIcon className={classes.styles_icon_device}/> }
             </div>

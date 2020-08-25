@@ -60,6 +60,7 @@ const Conferences = (props) => {
     let remoteTracks = {};
     let listParticipant = [];
     let isVideo = false;
+    let isRaiseHand = false;
 
     const options = {
         // serviceUrl:'wss://meet.jit.si/xmpp-websocket',
@@ -78,7 +79,8 @@ const Conferences = (props) => {
     };
 
     const initOptions = {
-        disableAudioLevels: true
+        disableAudioLevels: true,
+        enableAnalyticsLogging: false
     }
 
     useEffect(() => {
@@ -120,7 +122,7 @@ const Conferences = (props) => {
             console.log("role-111111111111" + user.getRole())
 
         });
-
+        room.on(window.JitsiMeetJS.events.conference.PARTICIPANT_PROPERTY_CHANGED, handleParticipantPropertyChange);
         room.on(window.JitsiMeetJS.events.conference.USER_LEFT, onUserLeft);
         room.on(window.JitsiMeetJS.events.conference.TRACK_MUTE_CHANGED, track => {
             console.log(`${track.getType()} - ${track.isMuted()}`);
@@ -203,7 +205,7 @@ const Conferences = (props) => {
         track.dispose();
         $(`#${identify}`).remove();
     }
-
+    
     const onChangeName = (value) => {
 
     }
@@ -226,6 +228,12 @@ const Conferences = (props) => {
         for (let i = 0; i < tracks.length; i++) {
             tracks[i].detach($(`#${id}${tracks[i].getType()}`));
         }
+    }
+
+    const handleParticipantPropertyChange = (participant, propertyName, oldValue, newValue) => {
+        console.log('participant========' + participant.getId());
+        console.log('propertyName========' + propertyName);
+        console.log('newValue========' + newValue);
     }
 
     const handleClickChat = () => {
@@ -311,13 +319,18 @@ const Conferences = (props) => {
         .catch(error => console.log(error));
     }
 
+    const handleClickHand = () => {
+        isRaiseHand = !isRaiseHand;
+        room.setLocalParticipantProperty("raised-hand", isRaiseHand);
+    }
+
     return(
         <div  className={classes.root}>
             <div className={classes.video_area}>
                 <VideoNormalView />
             </div>
             <div className={classes.control_area}>
-                <ControlArea onClickChat={handleClickChat} onClickCamera={handleClickCamera} onClickMic={handleClickMic} onClickScreenShare={handleClickScreenShare}/>
+                <ControlArea onClickChat={handleClickChat} onClickCamera={handleClickCamera} onClickMic={handleClickMic} onClickScreenShare={handleClickScreenShare} onClickHand={handleClickHand}/>
             </div>
             {
                 showChat ? <div className={classes.show_chat}>Hello What are you doing?</div> : 
