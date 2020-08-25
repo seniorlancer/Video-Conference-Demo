@@ -59,7 +59,7 @@ const Conferences = (props) => {
     let connection = null;
     let remoteTracks = {};
     let listParticipant = [];
-    let isVideo = true;
+    let isVideo = false;
 
     const options = {
         // serviceUrl:'wss://meet.jit.si/xmpp-websocket',
@@ -256,25 +256,57 @@ const Conferences = (props) => {
         });
     }
 
-    const handleClickScreenShare = () => {
-        
+    const processScreenShare = async (tracks) => {
+        if(localTracks[1]) {
+            await localTracks[1].dispose();
+            await localTracks.pop();
+        }
+        localTracks.push(tracks[0]);
+        localTracks[1].addEventListener(
+            window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
+            () => console.log('local track muted'));
+        localTracks[1].addEventListener(window.JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED, showCamera);
+        localTracks[1].attach($(`#localVideo`)[0]);
+        localTracks[1].attach($(`#localSmallVideo`)[0]);
+        room.addTrack(localTracks[1]);
+        isVideo = true;
+    } 
+
+    const processPlayCamera = async (tracks) => {
+        if(localTracks[1]) {
+            await localTracks[1].dispose();
+            await localTracks.pop();
+        }
+        localTracks.push(tracks[0]);
+        localTracks[1].addEventListener(
+            window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
+            () => console.log('local track muted'));
+        localTracks[1].attach($(`#localVideo`)[0]);
+        localTracks[1].attach($(`#localSmallVideo`)[0]);
+        room.addTrack(localTracks[1]);
+        isVideo = false;
+    } 
+
+    const showCamera = async () => {
         window.JitsiMeetJS.createLocalTracks({
-            devices: [ isVideo ? 'video' : 'desktop' ]
+            devices: ['video']
         })
         .then(tracks => {
-            isVideo = !isVideo;
-            if(localTracks[1]) {
-                localTracks[1].dispose();
-                localTracks.pop();
-            }
-            localTracks.push(tracks[0]);
-            localTracks[1].addEventListener(
-                window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
-                () => console.log('local track muted'));
-            localTracks[1].addEventListener(window.JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED, handleClickScreenShare);
-            localTracks[1].attach($(`#localVideo`)[0]);
-            localTracks[1].attach($(`#localSmallVideo`)[0]);
-            room.addTrack(localTracks[1]);
+            processPlayCamera(tracks);
+        })
+        .catch(error => console.log(error));
+    } 
+
+    const handleClickScreenShare = async () => {
+        if(isVideo) {
+            localTracks[1].dispose();
+            return;
+        }
+        window.JitsiMeetJS.createLocalTracks({
+            devices: ['desktop']
+        })
+        .then(tracks => {
+            processScreenShare(tracks);
         })
         .catch(error => console.log(error));
     }
