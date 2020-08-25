@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import VideoSmallView from './VideoSmallView';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -43,9 +44,9 @@ const VideoNormalView = (props) => {
             <video className={classes.main_video} autoPlay='1' id='localVideo' playsInline />
             <audio autoPlay='1' muted='1' id='localAudio' />
             <div className={classes.div_video_list} >
-                <video className={classes.tile_my_video} autoPlay='1' id='localSmallVideo' playsInline height='150' width='200'/>
+                <VideoSmallView className={classes.tile_my_video} video_tag_id='localSmallVideo' user_name='Hello Hi' user_id='' />
                 <audio autoPlay='1' muted='1' id='localSmallAudio' />
-                <div className={classes.div_remote_videos} id='remoteVideos' />
+                <div className={classes.div_remote_videos} id='remoteVideos'></div>
              </div>
         </div>
     )
