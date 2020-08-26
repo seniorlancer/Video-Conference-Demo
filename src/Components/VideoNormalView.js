@@ -10,9 +10,9 @@ const useStyles = makeStyles((theme) => ({
     },
     main_video: {
         height: '100%',
-        width: 'calc(100%)',
-        transform: 'scaleX(-1)',
-        objectFit: 'conver'
+        width: '100%',
+        // transform: 'scaleX(-1)',
+        objectFit: 'cover'
     },
     div_video_list: {
         height: '-webkit-fill-available',
@@ -20,9 +20,6 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         textAlign: 'center',
         right: 0,
-    },
-    tile_my_video: {
-        transform: 'scaleX(-1)',
     },
     div_remote_videos: {
         width: '100%',
@@ -37,14 +34,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const VideoNormalView = (props) => {
+    const {localVideoTrack} = props;
     const classes = useStyles();
 
     return(
         <div className={classes.root}>
-            <video className={classes.main_video} autoPlay='1' id='localVideo' playsInline />
-            <audio autoPlay='1' muted='1' id='localAudio' />
+            <video className={classes.main_video} autoPlay='1' id='mainVideo' playsInline onSuspend={()=>props.handleRemoveMainVideo()}/>
+            <audio autoPlay='1' muted='1' id='mainAudio' />
             <div className={classes.div_video_list} >
-                <VideoSmallView className={classes.tile_my_video} video_tag_id='localSmallVideo' user_name='Hello Hi' />
+                <div id='divLocalSmallVideo' />
                 <audio autoPlay='1' muted='1' id='localSmallAudio' />
                 <div className={classes.div_remote_videos} id='remoteVideos'></div>
              </div>
