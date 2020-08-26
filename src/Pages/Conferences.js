@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import {Drawer} from '@material-ui/core/';
@@ -6,6 +7,7 @@ import { Link as RouterLink, withRouter } from 'react-router-dom';
 import * as $ from 'jquery';
 import ControlArea from '../Components/ControlArea';
 import VideoNormalView from '../Components/VideoNormalView';
+import VideoSmallView from '../Components/VideoSmallView';
 import './conference.css';
 
 const useStyle = makeStyles((theme) => ({
@@ -188,11 +190,16 @@ const Conferences = (props) => {
 
         if (track.getType() === 'video') {
             $('#remoteVideos').append(
-                `<video autoplay='1' style='margin-bottom: 10px;' id='${identify}' height='150' width='200'/>`
+                // `<video autoplay='1' style='margin-bottom: 10px;' id='${identify}' height='150' width='200'/>`
+                `<div id='div${identify}' style='margin-bottom: 10px;'/>`
             );
+            ReactDOM.render(<VideoSmallView video_tag_id={identify} user_name='Hello Hi123' />, document.getElementById(`div${identify}`));
         } else {
             $('#remoteVideos').append(
-                `<audio autoplay='1' id='${identify}' />`);
+                `<div id='div${identify}' style='display: none;'>
+                <audio autoplay='1' id='${identify}' />
+                </div>`
+            );
         }
         track.attach($(`#${identify}`)[0]);
     }
@@ -203,7 +210,7 @@ const Conferences = (props) => {
         const identify = participant + track.getType();
         console.log('22222222222' + identify);
         track.dispose();
-        $(`#${identify}`).remove();
+        $(`#div${identify}`).remove();
     }
     
     const onChangeName = (value) => {
@@ -234,6 +241,12 @@ const Conferences = (props) => {
         console.log('participant========' + participant.getId());
         console.log('propertyName========' + propertyName);
         console.log('newValue========' + newValue);
+    }
+
+    const smallRemoteVideo = (video_tag_id) => {
+        return(
+            <VideoSmallView video_tag_id={video_tag_id} user_name='Hello Hi' user_id=''/>
+        )
     }
 
     const handleClickChat = () => {

@@ -44,7 +44,7 @@ const VideoNormalView = (props) => {
             <video className={classes.main_video} autoPlay='1' id='localVideo' playsInline />
             <audio autoPlay='1' muted='1' id='localAudio' />
             <div className={classes.div_video_list} >
-                <VideoSmallView className={classes.tile_my_video} video_tag_id='localSmallVideo' user_name='Hello Hi' user_id='' />
+                <VideoSmallView className={classes.tile_my_video} video_tag_id='localSmallVideo' user_name='Hello Hi' />
                 <audio autoPlay='1' muted='1' id='localSmallAudio' />
                 <div className={classes.div_remote_videos} id='remoteVideos'></div>
              </div>
