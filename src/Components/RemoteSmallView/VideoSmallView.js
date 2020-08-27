@@ -1,7 +1,7 @@
 import React, {useEffect, useState, Component} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import * as $ from 'jquery';
-import './videosmallview.css';
+import './remotesmallview.css';
 
 export default class VideoSmallView extends Component {
     constructor(props) {
@@ -12,9 +12,6 @@ export default class VideoSmallView extends Component {
         this.handleMouseLeave = this.handleMouseLeave.bind(this);
         this.handleClickSmallVideo = this.handleClickSmallVideo.bind(this);
     }
-    // const {user_id, video_tag_id, user_name, track} = props;
-    // const [overView, setOverView] = useState(false);
-
     handleMouseOver() {
         this.setState({overView: true});
     }
@@ -27,6 +24,10 @@ export default class VideoSmallView extends Component {
 
     componentDidMount() {
         this.state.track.attach($(`#${this.state.video_tag_id}`)[0]);
+    }
+
+    componentWillUnmount() {
+        this.state.track.detach($(`#${this.state.video_tag_id}`)[0]);
     }
 
     render() {

@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import VideoSmallView from './VideoSmallView/VideoSmallView';
+import VideoSmallView from './RemoteSmallView/VideoSmallView';
+import AudioSmallView from './RemoteSmallView/AudioSmallView';
 import * as $ from 'jquery';
 
 const useStyles = makeStyles((theme) => ({
@@ -35,13 +36,23 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const VideoNormalView = (props) => {
-    const {remoteUsers} = props;
+    const {localVideoTrack, remoteUsers} = props;
     const classes = useStyles();
 
     const addSmallVideo = (data) => {
         return(
-            <VideoSmallView key={data.videotrack.getParticipantId()} track={data.videotrack} video_tag_id={data.videotrack.getParticipantId() + data.videotrack.getType()} user_name='Hello Hi123' />
+            <VideoSmallView key={data.videotrack.getParticipantId() + data.videotrack.getType()} track={data.videotrack} video_tag_id={data.videotrack.getParticipantId() + data.videotrack.getType()} user_name={data.id} />
         );
+    }
+
+    const addSmallAudio = (data) => {
+        return(
+            <AudioSmallView key={data.audiotrack.getParticipantId() + data.audiotrack.getType()} track={data.audiotrack} audio_tag_id={data.audiotrack.getParticipantId() + data.audiotrack.getType()}/>
+        )
+    }
+
+    const addAudoTrack = (data) => {
+        data.audiotrack.attach($($(`${data.audiotrack.getParticipantId() + data.audiotrack.getType()}`)))
     }
 
     return(
@@ -49,17 +60,16 @@ const VideoNormalView = (props) => {
             <video className={classes.main_video} autoPlay='1' id='mainVideo' playsInline onSuspend={()=>props.handleRemoveMainVideo()}/>
             <audio autoPlay='1' muted='1' id='mainAudio' />
             <div className={classes.div_video_list} >
-                <div id='divLocalSmallVideo' />
+                <div id='divLocalSmallVideo'>
+                    {localVideoTrack.length === 0 ? null : <VideoSmallView track={localVideoTrack} video_tag_id='localSmallVideo' user_name='Hello Hi' />}
+                </div>
                 <audio autoPlay='1' muted='1' id='localSmallAudio' />
                 <div className={classes.div_remote_videos} id='remoteVideos'>
-                  {remoteUsers.map((remoteUser, index) => (
-                      remoteUser.videotrack.length !== 0 ? addSmallVideo(remoteUser) : null
-                    //   remoteUser.videotrack === [] ? null : remoteUser.videotrack.attach($(`#${remoteUser.videotrack.getParticipantId() + remoteUser.videotrack.getType()}`)[0])
-                      //   remoteUser.audiotrack === null ? null : 
-                    //     <div id={'div' + remoteUser.audiotrack.getParticipantId() + remoteUser.audiotrack.getType()} style='display: none;'>
-                    //         <audio autoplay='1' id={remoteUser.audiotrack.getParticipantId() + remoteUser.audiotrack.getType()} />
-                    //     </div>
-
+                    {remoteUsers.map((remoteUser, index) => (
+                        remoteUser.videotrack.length === 0 ? null : addSmallVideo(remoteUser)
+                    ))}
+                    {remoteUsers.map((remoteUser, index) => (
+                        remoteUser.audiotrack.length === 0 ? null : addSmallAudio(remoteUser)
                     ))}
                 </div>
              </div>

@@ -7,7 +7,7 @@ import { Link as RouterLink, withRouter } from 'react-router-dom';
 import * as $ from 'jquery';
 import ControlArea from '../Components/ControlArea';
 import VideoNormalView from '../Components/VideoNormalView';
-import VideoSmallView from '../Components/VideoSmallView/VideoSmallView';
+import VideoSmallView from '../Components/RemoteSmallView/VideoSmallView';
 import './conference.css';
 
 const useStyle = makeStyles((theme) => ({
@@ -57,6 +57,7 @@ const Conferences = (props) => {
     const [showChat, setShowChat] = useState(false);
     const listRemoteUserData = [];
     const [remoteUserData, setRemoteUserData] = useState([]);
+    const [localVideoTrack, setLocalVideoTrack] = useState([]);
     let localTracks = [];
     let room = null;
     let isJoined = false;
@@ -178,10 +179,10 @@ const Conferences = (props) => {
             localTrack.addEventListener(window.JitsiMeetJS.events.track.TRACK_AUDIO_OUTPUT_CHANGED,
                 deviceId =>
                     console.log(`track audio output device was changed to ${deviceId}`));
-            if (localTrack.getType() === 'video') {
-                ReactDOM.render(<VideoSmallView track={localTrack} video_tag_id='localSmallVideo' user_name='Hello Hi' />, document.getElementById('divLocalSmallVideo'));                    
+            if (localTrack.getType() === 'video') {              
                 localTrack.attach($(`#mainVideo`)[0]);
-                localTrack.attach($(`#localSmallVideo`)[0]);
+                console.log("local-555555555555-" + localTrack);
+                setLocalVideoTrack(localTrack);
             } else {
                 localTrack.attach($(`#mainAudio`)[0]);
                 localTrack.attach($(`#localSmallAudio`)[0]);
@@ -206,7 +207,8 @@ const Conferences = (props) => {
                     remoteUser.videotrack = track;
                     listRemoteUserData[index] = remoteUser;
                 } else if(type === 'audio') {
-                    listRemoteUserData[index].audiotrack = track;
+                    remoteUser.audiotrack = track;
+                    listRemoteUserData[index] = remoteUser;
                 }
                 setRemoteUserData([]);
                 setRemoteUserData(listRemoteUserData);
@@ -299,34 +301,39 @@ const Conferences = (props) => {
     }
 
     const processScreenShare = async (tracks) => {
+        console.log('screenshare-5555555555');
         if(localTracks[1]) {
-            await localTracks[1].dispose();
-            await localTracks.pop();
+            localTracks[1].dispose();
+            localTracks.pop();
+
         }
         localTracks.push(tracks[0]);
         localTracks[1].addEventListener(
             window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
             () => console.log('local track muted'));
         localTracks[1].addEventListener(window.JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED, showCamera);
-        ReactDOM.render(<VideoSmallView track={localTracks[1]} video_tag_id='localSmallVideo' user_name='Hello Hi' />, document.getElementById('divLocalSmallVideo'));                    
         localTracks[1].attach($(`#mainVideo`)[0]);
-        localTracks[1].attach($(`#localSmallVideo`)[0]);
+        // localTracks[1].attach($(`#localSmallVideo`)[0]);
+        await setLocalVideoTrack([]);
+        await setLocalVideoTrack(localTracks[1]);
         room.addTrack(localTracks[1]);
         isVideo = true;
     } 
 
-    const processPlayCamera = async (tracks) => {
+    const processPlayCamera = (tracks) => {
+        console.log('camera-5555555555');
         if(localTracks[1]) {
-            await localTracks[1].dispose();
-            await localTracks.pop();
+            localTracks[1].dispose();
+            localTracks.pop();
         }
         localTracks.push(tracks[0]);
         localTracks[1].addEventListener(
             window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
             () => console.log('local track muted'));
-        ReactDOM.render(<VideoSmallView track={localTracks[1]} video_tag_id='localSmallVideo' user_name='Hello Hi' />, document.getElementById('divLocalSmallVideo'));                    
         localTracks[1].attach($(`#mainVideo`)[0]);
-        localTracks[1].attach($(`#localSmallVideo`)[0]);
+        // localTracks[1].attach($(`#localSmallVideo`)[0]);
+        setLocalVideoTrack([]);
+        setLocalVideoTrack(localTracks[1]);
         room.addTrack(localTracks[1]);
         isVideo = false;
     }
@@ -371,7 +378,7 @@ const Conferences = (props) => {
     return(
         <div  className={classes.root}>
             <div className={classes.video_area}>
-                <VideoNormalView handleRemoveMainVideo={handleRemoveMainVideo} remoteUsers={remoteUserData}/>
+                <VideoNormalView localVideoTrack={localVideoTrack} remoteUsers={remoteUserData} handleRemoveMainVideo={handleRemoveMainVideo}/>
             </div>
             <div className={classes.control_area}>
                 <ControlArea onClickChat={handleClickChat} onClickCamera={handleClickCamera} onClickMic={handleClickMic} onClickScreenShare={handleClickScreenShare} onClickHand={handleClickHand}/>

@@ -1,0 +1,38 @@
+.root{
+    margin-bottom: 10px;
+    display: flex;
+    background: #000000
+}
+.over_div_show {
+    /* position: absolute; */
+    width: 200px;
+    height: 150px;
+    margin-left: -200px;
+    z-index: 1;
+    background: #000000A0;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    visibility: visible;
+}
+.over_div_hide {
+    /* position: absolute; */
+    width: 200px;
+    margin-left: -200px;
+    height: 150px;
+    z-index: 1;
+    background: #000000A0;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    visibility: hidden;
+} 
+.div_text {
+    color: #FFFFFF
+}
+.video {
+    object-fit: cover
+}
+.div_audio {
+    display: none;
+}
