@@ -1,0 +1,22 @@
+.root{
+    display: flex;
+    background: #000000
+}
+.over_div_show {
+    position: absolute;
+    width: 200px;
+    height: 150px;
+    background: #000000A0;
+    align-items: center;
+    justify-content: center;
+    display: flex
+}
+.over_div_hide {
+    display: none
+} 
+.div_text {
+    color: #FFFFFF
+}
+.video {
+    object-fit: cover
+}

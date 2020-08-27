@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import VideoSmallView from './VideoSmallView';
+import VideoSmallView from './VideoSmallView/VideoSmallView';
+import * as $ from 'jquery';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -34,8 +35,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const VideoNormalView = (props) => {
-    const {localVideoTrack} = props;
+    const {remoteUsers} = props;
     const classes = useStyles();
+
+    const addSmallVideo = (data) => {
+        return(
+            <VideoSmallView key={data.videotrack.getParticipantId()} track={data.videotrack} video_tag_id={data.videotrack.getParticipantId() + data.videotrack.getType()} user_name='Hello Hi123' />
+        );
+    }
 
     return(
         <div className={classes.root}>
@@ -44,7 +51,17 @@ const VideoNormalView = (props) => {
             <div className={classes.div_video_list} >
                 <div id='divLocalSmallVideo' />
                 <audio autoPlay='1' muted='1' id='localSmallAudio' />
-                <div className={classes.div_remote_videos} id='remoteVideos'></div>
+                <div className={classes.div_remote_videos} id='remoteVideos'>
+                  {remoteUsers.map((remoteUser, index) => (
+                      remoteUser.videotrack.length !== 0 ? addSmallVideo(remoteUser) : null
+                    //   remoteUser.videotrack === [] ? null : remoteUser.videotrack.attach($(`#${remoteUser.videotrack.getParticipantId() + remoteUser.videotrack.getType()}`)[0])
+                      //   remoteUser.audiotrack === null ? null : 
+                    //     <div id={'div' + remoteUser.audiotrack.getParticipantId() + remoteUser.audiotrack.getType()} style='display: none;'>
+                    //         <audio autoplay='1' id={remoteUser.audiotrack.getParticipantId() + remoteUser.audiotrack.getType()} />
+                    //     </div>
+
+                    ))}
+                </div>
              </div>
         </div>
     )
