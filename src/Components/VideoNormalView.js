@@ -50,11 +50,7 @@ const VideoNormalView = (props) => {
             <AudioSmallView key={data.audiotrack.getParticipantId() + data.audiotrack.getType()} track={data.audiotrack} audio_tag_id={data.audiotrack.getParticipantId() + data.audiotrack.getType()}/>
         )
     }
-
-    const addAudoTrack = (data) => {
-        data.audiotrack.attach($($(`${data.audiotrack.getParticipantId() + data.audiotrack.getType()}`)))
-    }
-
+    
     return(
         <div className={classes.root}>
             <video className={classes.main_video} autoPlay='1' id='mainVideo' playsInline onSuspend={()=>props.handleRemoveMainVideo()}/>
