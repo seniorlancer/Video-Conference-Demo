@@ -40,3 +40,9 @@
     position: absolute;
     z-index: 1;
 }
+.show {
+    visibility: visible;
+}
+.hide {
+    visibility: hidden;
+}

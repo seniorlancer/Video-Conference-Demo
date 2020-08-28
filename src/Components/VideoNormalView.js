@@ -36,12 +36,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const VideoNormalView = (props) => {
-    const {localVideoTrack, remoteUsers} = props;
+    const {localVideoTrack, isLocalHand, remoteUsers} = props;
     const classes = useStyles();
 
     const addSmallVideo = (data) => {
         return(
-            <VideoSmallView key={data.videotrack.getParticipantId() + data.videotrack.getType()} track={data.videotrack} video_tag_id={data.videotrack.getParticipantId() + data.videotrack.getType()} user_name={data.id} />
+            <VideoSmallView key={data.videotrack.getParticipantId() + data.videotrack.getType()} track={data.videotrack} video_tag_id={data.videotrack.getParticipantId() + data.videotrack.getType()} user_name={data.id} ishand={data.isHand} />
         );
     }
 
@@ -57,7 +57,7 @@ const VideoNormalView = (props) => {
             <audio autoPlay='1' muted='1' id='mainAudio' />
             <div className={classes.div_video_list} >
                 <div id='divLocalSmallVideo'>
-                    {localVideoTrack.length === 0 ? null : <VideoSmallView track={localVideoTrack} video_tag_id='localSmallVideo' user_name='Hello Hi' />}
+                    {localVideoTrack.length === 0 ? null : <VideoSmallView track={localVideoTrack} video_tag_id='localSmallVideo' user_name='Hello Hi' ishand={isLocalHand} />}
                 </div>
                 <audio autoPlay='1' muted='1' id='localSmallAudio' />
                 <div className={classes.div_remote_videos} id='remoteVideos'>

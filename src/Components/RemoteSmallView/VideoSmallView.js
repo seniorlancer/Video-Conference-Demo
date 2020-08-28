@@ -8,7 +8,7 @@ export default class VideoSmallView extends Component {
     constructor(props) {
         super(props);
 
-        this.state = { track: this.props.track, video_tag_id: this.props.video_tag_id, user_name: this.props.user_name, overView: false };
+        this.state = { track: this.props.track, video_tag_id: this.props.video_tag_id, user_name: this.props.user_name, ishand: this.props.ishand, overView: false };
         this.handleMouseOver = this.handleMouseOver.bind(this);
         this.handleMouseLeave = this.handleMouseLeave.bind(this);
         this.handleClickSmallVideo = this.handleClickSmallVideo.bind(this);
@@ -16,6 +16,7 @@ export default class VideoSmallView extends Component {
     
     componentWillReceiveProps(nextProps) {
         this.setState({track: nextProps.track});
+        this.setState({ishand: nextProps.ishand});
     }
 
     handleMouseOver() {
@@ -40,7 +41,7 @@ export default class VideoSmallView extends Component {
         return (
             <div id={'div' + this.state.video_tag_id} className="root" onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} onClick={this.handleClickSmallVideo}>
                 <video className="video" autoPlay='1' id={this.state.video_tag_id} playsInline height='150' width='200' />   
-                <PanToolIcon className="hand" />             
+                <PanToolIcon className={this.state.ishand ? "hand show" : "hand hide"} />             
                 <div className={this.state.overView ? "over_div_show" : "over_div_hide"} >
                     <div className="div_text">{this.state.user_name}</div>
                 </div>

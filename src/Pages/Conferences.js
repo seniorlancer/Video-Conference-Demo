@@ -59,6 +59,7 @@ const Conferences = (props) => {
     const [remoteUserData, setRemoteUserData] = useState([]);
     const [localVideoTrack, setLocalVideoTrack] = useState([]);
     const [localAudioTrack, setLocalAudioTrack] = useState([]);
+    const [raiseHand, setRaiseHand] = useState(false);
     const isScreenShare = React.useRef(false);
     const isCamera = React.useRef(false);
     const room = React.useRef(null);
@@ -68,7 +69,6 @@ const Conferences = (props) => {
     let connection = null;
     let remoteTracks = {};
     let isVideo = false;
-    let isRaiseHand = false;
 
     const options = {
         // serviceUrl:'wss://meet.jit.si/xmpp-websocket',
@@ -125,9 +125,6 @@ const Conferences = (props) => {
         room.current.on(window.JitsiMeetJS.events.conference.DISPLAY_NAME_CHANGED, onChangeName);
         room.current.on(window.JitsiMeetJS.events.conference.CONFERENCE_JOINED, onConferenceJoined);
         room.current.on(window.JitsiMeetJS.events.conference.USER_JOINED, (id, user) => {
-            console.log("id-555555555-" + id);
-            console.log("name-555555555-" + user.getDisplayName())
-            console.log("role-5555555555-" + user.getRole())
             let isFind = false
             listRemoteUserData.map((userData, index) => {
                 if(userData.id === id) {
@@ -185,7 +182,6 @@ const Conferences = (props) => {
                     console.log(`track audio output device was changed to ${deviceId}`));
             if (localTrack.getType() === 'video') {              
                 localTrack.attach($(`#mainVideo`)[0]);
-                console.log("local-555555555555-" + localTrack);
                 setLocalVideoTrack(localTrack);
             } else {
                 localTrack.attach($(`#mainAudio`)[0]);
@@ -272,9 +268,21 @@ const Conferences = (props) => {
     }
 
     const handleParticipantPropertyChange = (participant, propertyName, oldValue, newValue) => {
-        console.log('participant========' + participant.getId());
-        console.log('propertyName========' + propertyName);
-        console.log('newValue========' + newValue);
+        let userData = [];
+        listRemoteUserData.map((remoteUser, index)=>{
+            if(remoteUser.id === participant.getId()) {
+                switch(propertyName) {
+                    case "raised-hand":
+                        listRemoteUserData[index].isHand = newValue;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            userData.push(remoteUser);
+        });
+        setRemoteUserData([]);
+        setRemoteUserData(listRemoteUserData);
     }
     
     const handleClickChat = () => {
@@ -345,13 +353,12 @@ const Conferences = (props) => {
     }
 
     const handleClickHand = () => {
-        isRaiseHand = !isRaiseHand;
-        room.current.setLocalParticipantProperty("raised-hand", isRaiseHand);
+        room.current.setLocalParticipantProperty("raised-hand", !raiseHand);
+        setRaiseHand(!raiseHand);
     }
 
     const handleRemoveMainVideo = async () => {
         if(localVideoTrack.length !== 0) {
-            console.log('321321-5555555-'+localVideoTrack);
             localVideoTrack.attach($(`#mainVideo`)[0]);
         } else {
             
@@ -361,7 +368,7 @@ const Conferences = (props) => {
     return(
         <div  className={classes.root}>
             <div className={classes.video_area}>
-                <VideoNormalView localVideoTrack={localVideoTrack} remoteUsers={remoteUserData} handleRemoveMainVideo={handleRemoveMainVideo}/>
+                <VideoNormalView localVideoTrack={localVideoTrack} remoteUsers={remoteUserData} isLocalHand={raiseHand} handleRemoveMainVideo={handleRemoveMainVideo}/>
             </div>
             <div className={classes.control_area}>
                 <ControlArea onClickChat={handleClickChat} onClickCamera={handleClickCamera} onClickMic={handleClickMic} onClickScreenShare={handleClickScreenShare} onClickHand={handleClickHand}/>
