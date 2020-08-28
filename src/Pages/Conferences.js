@@ -58,6 +58,7 @@ const Conferences = (props) => {
     const listRemoteUserData = [];
     const [remoteUserData, setRemoteUserData] = useState([]);
     const [localVideoTrack, setLocalVideoTrack] = useState([]);
+    const [localAudioTrack, setLocalAudioTrack] = useState([]);
     const isScreenShare = React.useRef(false);
     const isCamera = React.useRef(false);
     const room = React.useRef(null);
@@ -189,6 +190,7 @@ const Conferences = (props) => {
             } else {
                 localTrack.attach($(`#mainAudio`)[0]);
                 localTrack.attach($(`#localSmallAudio`)[0]);
+                setLocalAudioTrack(localTrack);
             }
             if (isJoined) {
                 room.current.addTrack(localTrack);
@@ -280,27 +282,19 @@ const Conferences = (props) => {
     }
 
     const handleClickCamera = () => {
-        localTracks.map((localTrack) => {
-            if(localTrack.getType() === 'video') {
-                if(localTrack.isMuted()) {
-                    localTrack.unmute();
-                } else {
-                    localTrack.mute();
-                }
-            }
-        });
+        if(localVideoTrack.isMuted()) {
+            localVideoTrack.unmute();
+        } else {
+            localVideoTrack.mute();
+        }
     }
 
     const handleClickMic = () => {
-        localTracks.map((localTrack) => {
-            if(localTrack.getType() === 'audio') {
-                if(localTrack.isMuted()) {
-                    localTrack.unmute();
-                } else {
-                    localTrack.mute();
-                }
-            }
-        });
+        if(localAudioTrack.isMuted()) {
+            localAudioTrack.unmute();
+        } else {
+            localAudioTrack.mute();
+        }
     }
 
     useEffect(() => {
