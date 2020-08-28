@@ -1,14 +1,13 @@
 .root{
     margin-bottom: 10px;
     display: flex;
-    background: #000000
+    background: #000000;
+    position: relative;
 }
 .over_div_show {
-    /* position: absolute; */
+    position: absolute;
     width: 200px;
     height: 150px;
-    margin-left: -200px;
-    z-index: 1;
     background: #000000A0;
     align-items: center;
     justify-content: center;
@@ -16,11 +15,9 @@
     visibility: visible;
 }
 .over_div_hide {
-    /* position: absolute; */
+    position: absolute;
     width: 200px;
-    margin-left: -200px;
     height: 150px;
-    z-index: 1;
     background: #000000A0;
     align-items: center;
     justify-content: center;
@@ -35,4 +32,11 @@
 }
 .div_audio {
     display: none;
+}
+.hand {
+    color: #FFFFFF;
+    margin-top: 10px;
+    margin-left: 5px;
+    position: absolute;
+    z-index: 1;
 }
