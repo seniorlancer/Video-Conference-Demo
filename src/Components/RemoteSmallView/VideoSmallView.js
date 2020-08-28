@@ -13,6 +13,11 @@ export default class VideoSmallView extends Component {
         this.handleMouseLeave = this.handleMouseLeave.bind(this);
         this.handleClickSmallVideo = this.handleClickSmallVideo.bind(this);
     }
+    
+    componentWillReceiveProps(nextProps) {
+        this.setState({track: nextProps.track});
+    }
+
     handleMouseOver() {
         this.setState({ overView: true });
     }
