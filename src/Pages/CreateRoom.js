@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles, withStyles } from '@material-ui/styles';
 import { Link as RouterLink, withRouter } from 'react-router-dom';
 import {Button, Grid, TextField} from '@material-ui/core/';
 import LogoImage from '../assets/images/avatar.png';
+import BackgroundImage from '../assets/images/background.jpg';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -11,7 +12,9 @@ const useStyles = makeStyles(theme => ({
     container: {
         width: '100%',
         height: '100vh',
-        position: 'fixed'
+        position: 'fixed',
+        backgroundImage: 'url('+ BackgroundImage+')',
+        backgroundRepeat: 'round'
     },
     width_40: {
         width: '40%'
@@ -31,6 +34,28 @@ const useStyles = makeStyles(theme => ({
         backgroundImage: 'url('+ LogoImage+')'
     }
 }));
+
+const CssTextField = withStyles({
+    root: {
+      '& label.Mui-focused': {
+        color: 'white',
+      },
+      '& .MuiInput-underline:after': {
+        borderBottomColor: 'white',
+      },
+      '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+          borderColor: 'white',
+        },
+        '&:hover fieldset': {
+          borderColor: 'white',
+        },
+        '&.Mui-focused fieldset': {
+          borderColor: 'white',
+        },
+      },
+    },
+  })(TextField);
 
 const CreateRoom = (props) => {
     const classes = useStyles();
@@ -63,10 +88,9 @@ const CreateRoom = (props) => {
                 <div className={classes.div_logo} />
             </div>
             <Grid className={classes.container}  container direction="column" justify="center" alignItems="center">
-                <TextField className={classes.width_40} label="Your Name" variant="outlined" onChange={changeName} value={name}/>
-                <TextField className={classes.style_fields} label="Room Name" variant="outlined" onChange={changeRoomName} value={roomname} />
-                <TextField className={classes.style_fields} label="Room Password" variant="outlined" onChange={changePassword} value={password} />
-                <Button className={classes.style_fields} variant="outlined" color="primary" onClick={clickCreateRoom} >Create Room</Button>
+                <CssTextField className={classes.width_40} label="Your Name" variant="outlined" onChange={changeName} value={name} InputProps={{style: { color: '#FFFFFF' },}}/>
+                <CssTextField className={classes.style_fields} label="Room Name" variant="outlined" onChange={changeRoomName} value={roomname} InputProps={{style: { color: '#FFFFFF' },}}/>
+                <Button className={classes.style_fields} variant="contained" color="primary" onClick={clickCreateRoom} >Create Room</Button>
             </Grid>
         </div>
     );
