@@ -233,10 +233,12 @@ const Conferences = (props) => {
 
     const onRemoveTrack = (track) => {
         const participant = track.getParticipantId();
-
+        const type = track.getType();
         listRemoteUserData.map((user, index) => {
-            if(user.id === participant) {
-                listRemoteUserData.splice(index);
+            if(user.id === participant && type === "video") {
+                listRemoteUserData.splice(index, 1);
+                track.detach($(`#${participant}video`)[0]);
+                track.detach($(`#${participant}audio`)[0]);
             }
         });
         setRemoteUserData([]);
