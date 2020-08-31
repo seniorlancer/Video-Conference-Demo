@@ -15,7 +15,7 @@ const Routes = () => {
                 to="/createroom"
             />  */}
             <Route exact path="/" component={CreateRoom} />
-            <Route exact path="/conferences" component={Conferences} />
+            <Route exact path="/conferences/:roomname/:name" component={Conferences} />
         </Switch>
     )
 }

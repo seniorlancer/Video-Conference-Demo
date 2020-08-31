@@ -55,7 +55,6 @@ const useStyle = makeStyles((theme) => ({
 const Conferences = (props) => {
     const classes = useStyle();
     const [showChat, setShowChat] = useState(false);
-    const listRemoteUserData = [];
     const [remoteUserData, setRemoteUserData] = useState([]);
     const [localVideoTrack, setLocalVideoTrack] = useState([]);
     const [localAudioTrack, setLocalAudioTrack] = useState([]);
@@ -63,6 +62,8 @@ const Conferences = (props) => {
     const isScreenShare = React.useRef(false);
     const isCamera = React.useRef(false);
     const room = React.useRef(null);
+    let listRemoteUserData = [];
+    let listRemouteUsers = [];
     let localTracks = [];
     // let room = React.useRef(null);
     let isJoined = false;
@@ -119,28 +120,25 @@ const Conferences = (props) => {
     }, []);
 
     const onConnectionSuccess = () => {        
-        room.current = connection.initJitsiConference('conference1234', confOptions);
+        room.current = connection.initJitsiConference(props.match.params.roomname, confOptions);
         room.current.on(window.JitsiMeetJS.events.conference.TRACK_ADDED, onRemoteTrack);
         room.current.on(window.JitsiMeetJS.events.conference.TRACK_REMOVED, onRemoveTrack);
         room.current.on(window.JitsiMeetJS.events.conference.DISPLAY_NAME_CHANGED, onChangeName);
         room.current.on(window.JitsiMeetJS.events.conference.CONFERENCE_JOINED, onConferenceJoined);
         room.current.on(window.JitsiMeetJS.events.conference.USER_JOINED, (id, user) => {
-            let isFind = false
-            listRemoteUserData.map((userData, index) => {
-                if(userData.id === id) {
-                    listRemoteUserData[index].user = user;
+            let isFind = false;
+            listRemouteUsers.map((cell, index) => {
+                if(cell.id === id) {
+                    cell.user = user; 
+                    listRemouteUsers[index] = cell;
+                    isFind = true;
                 }
-                setRemoteUserData([]);
-                setRemoteUserData(listRemoteUserData);
-                isFind = true;
             });
-            if(isFind === true) {
+            if(isFind) {
                 return;
             }
-            let user_val = {id: id, user: user, isHand: false, videotrack: [], audiotrack: []};
-            listRemoteUserData.push(user_val);
-            setRemoteUserData([]);
-            setRemoteUserData(listRemoteUserData);
+            let new_user = {id: id, user: user};
+            listRemouteUsers.push(new_user);
         });
         room.current.on(window.JitsiMeetJS.events.conference.PARTICIPANT_PROPERTY_CHANGED, handleParticipantPropertyChange);
         room.current.on(window.JitsiMeetJS.events.conference.USER_LEFT, onUserLeft);
@@ -150,7 +148,7 @@ const Conferences = (props) => {
         room.current.on(window.JitsiMeetJS.events.conference.DISPLAY_NAME_CHANGED, (userID, displayName) => console.log(`${userID} - ${displayName}`));
         room.current.on(window.JitsiMeetJS.events.conference.TRACK_AUDIO_LEVEL_CHANGED, (userID, audioLevel) => console.log(`${userID} - ${audioLevel}`));
         room.current.on(window.JitsiMeetJS.events.conference.PHONE_NUMBER_CHANGED,() => console.log(`${room.current.getPhoneNumber()} - ${room.current.getPhonePin()}`));
-        room.current.setDisplayName('Hello Hi');
+        room.current.setDisplayName(props.match.params.name);
 
         room.current.join();
     }
@@ -211,20 +209,26 @@ const Conferences = (props) => {
                     remoteUser.audiotrack = track;
                     listRemoteUserData[index] = remoteUser;
                 }
-                setRemoteUserData([]);
-                setRemoteUserData(listRemoteUserData);
                 isFind = true;
             }
         });
         if(isFind === true) {
+            setRemoteUserData([]);
+            setRemoteUserData(listRemoteUserData);
             return;
         }
-        let user_val = {id: participant, user: '', isHand: false, videotrack: [], audiotrack: []};
+        console.log('tarck123-55555555555-' + participant);
+        let user_val = {id: participant, user: null, isHand: false, videotrack: [], audiotrack: []};
         if(type === 'video') {
             user_val.videotrack = track;
         } else if(type === 'audio') {
             user_val.audiotrack = track;
         }
+        listRemouteUsers.map((cell, index) => {
+            if(cell.id === participant) {
+                user_val.user = cell.user;
+            }
+        });
         listRemoteUserData.push(user_val);
         setRemoteUserData([]);
         setRemoteUserData(listRemoteUserData);
@@ -236,6 +240,7 @@ const Conferences = (props) => {
         const type = track.getType();
         listRemoteUserData.map((user, index) => {
             if(user.id === participant && type === "video") {
+                console.log('remove-5555555555-' + participant);
                 listRemoteUserData.splice(index, 1);
                 track.detach($(`#${participant}video`)[0]);
                 track.detach($(`#${participant}audio`)[0]);
@@ -245,7 +250,11 @@ const Conferences = (props) => {
         setRemoteUserData(listRemoteUserData);
     }
     
-    const onChangeName = (value) => {
+    const onChangeName = (id, displayName) => {
+        console.log('changename-5555555555-' + id + '-' + displayName);
+    }
+
+    const onUserJoin = () => {
 
     }
 
@@ -253,7 +262,7 @@ const Conferences = (props) => {
         isJoined = true;
         localTracks.map((localTrack) => {
             room.current.addTrack(localTrack);
-            room.current.setDisplayName('Hello Hi');
+            room.current.setDisplayName(props.match.params.name);
         });
     }
 
@@ -370,7 +379,7 @@ const Conferences = (props) => {
     return(
         <div  className={classes.root}>
             <div className={classes.video_area}>
-                <VideoNormalView localVideoTrack={localVideoTrack} remoteUsers={remoteUserData} isLocalHand={raiseHand} handleRemoveMainVideo={handleRemoveMainVideo}/>
+                <VideoNormalView localVideoTrack={localVideoTrack} remoteUsers={remoteUserData} isLocalHand={raiseHand} name={props.match.params.name} handleRemoveMainVideo={handleRemoveMainVideo}/>
             </div>
             <div className={classes.control_area}>
                 <ControlArea onClickChat={handleClickChat} onClickCamera={handleClickCamera} onClickMic={handleClickMic} onClickScreenShare={handleClickScreenShare} onClickHand={handleClickHand}/>

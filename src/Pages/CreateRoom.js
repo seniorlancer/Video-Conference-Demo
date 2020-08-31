@@ -14,7 +14,8 @@ const useStyles = makeStyles(theme => ({
         height: '100vh',
         position: 'fixed',
         backgroundImage: 'url('+ BackgroundImage+')',
-        backgroundRepeat: 'round'
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover'
     },
     width_40: {
         width: '40%'
@@ -63,7 +64,6 @@ const CreateRoom = (props) => {
 
     const [name, setName] = useState('');
     const [roomname, setRoomName] = useState('');
-    const [password, setPassword] = useState('');
 
     const changeName = (event) => {
         setName(event.target.value);
@@ -73,20 +73,13 @@ const CreateRoom = (props) => {
         setRoomName(event.target.value);
     }
 
-    const changePassword = (event) => {
-        setPassword(event.target.value);
-    }
-
     const clickCreateRoom = () => {
-        history.push('/conferences');
+        history.push('/conferences/' + roomname + '/' + name);
         window.location.reload();
     }
 
     return(
         <div className={classes.root} >
-            <div className={classes.div_logo_area}>
-                <div className={classes.div_logo} />
-            </div>
             <Grid className={classes.container}  container direction="column" justify="center" alignItems="center">
                 <CssTextField className={classes.width_40} label="Your Name" variant="outlined" onChange={changeName} value={name} InputProps={{style: { color: '#FFFFFF' },}}/>
                 <CssTextField className={classes.style_fields} label="Room Name" variant="outlined" onChange={changeRoomName} value={roomname} InputProps={{style: { color: '#FFFFFF' },}}/>
