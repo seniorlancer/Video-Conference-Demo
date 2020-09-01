@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import VideoSmallView from './RemoteSmallView/VideoSmallView';
 import AudioSmallView from './RemoteSmallView/AudioSmallView';
+import Avatar from '@material-ui/core/Avatar';
 import * as $ from 'jquery';
 
 const useStyles = makeStyles((theme) => ({
@@ -33,6 +34,20 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         
     },
+    div_avatar: {
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        visibility: 'hidden'
+    },
+    avatar: {
+        width: '300px',
+        height: '300px',
+        fontSize: '250px',
+    }
 }));
 
 const VideoNormalView = (props) => {
@@ -53,6 +68,9 @@ const VideoNormalView = (props) => {
     
     return(
         <div className={classes.root}>
+            <div className={classes.div_avatar}>
+                <Avatar className={classes.avatar}>{name.charAt(0).toUpperCase()}</Avatar>
+            </div>
             <video className={classes.main_video} autoPlay='1' id='mainVideo' playsInline onSuspend={()=>props.handleRemoveMainVideo()}/>
             <audio autoPlay='1' muted='1' id='mainAudio' />
             <div className={classes.div_video_list} >

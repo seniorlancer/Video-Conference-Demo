@@ -1,6 +1,7 @@
 import React, {useEffect, useState, Component} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PanToolIcon from '@material-ui/icons/PanTool';
+import Avatar from '@material-ui/core/Avatar';
 import * as $ from 'jquery';
 import './remotesmallview.css';
 
@@ -26,21 +27,30 @@ export default class VideoSmallView extends Component {
         this.setState({ overView: false });
     }
     handleClickSmallVideo() {
-        this.state.track.attach($(`#mainVideo`)[0]);
+        if(this.state.track !== null) {
+            this.state.track.attach($(`#mainVideo`)[0]);
+        }
     }
 
     componentDidMount() {
-        this.state.track.attach($(`#${this.state.video_tag_id}`)[0]);
+        if(this.state.track !== null) {
+            this.state.track.attach($(`#${this.state.video_tag_id}`)[0]);
+        }
     }
 
     componentWillUnmount() {
-        this.state.track.detach($(`#${this.state.video_tag_id}`)[0]);
+        if(this.state.track !== null) {
+            this.state.track.detach($(`#${this.state.video_tag_id}`)[0]);
+        }
     }
 
     render() {
         return (
             <div id={'div' + this.state.video_tag_id} className="root" onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} onClick={this.handleClickSmallVideo}>
-                <video className="video" autoPlay='1' id={this.state.video_tag_id} playsInline height='150' width='200' />   
+                <video className="video" autoPlay='1' id={this.state.video_tag_id} playsInline height='150' width='200' />  
+                <div className="div-avatar">
+                    <Avatar className="avatar">{this.state.user_name.charAt(0).toUpperCase()}</Avatar>
+                </div> 
                 <PanToolIcon className={this.state.ishand ? "hand show" : "hand hide"} />             
                 <div className={this.state.overView ? "over_div_show" : "over_div_hide"} >
                     <div className="div_text">{this.state.user_name}</div>
