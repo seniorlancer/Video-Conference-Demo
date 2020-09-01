@@ -60,17 +60,20 @@ const Conferences = (props) => {
     const [localVideoTrack, setLocalVideoTrack] = useState([]);
     const [localAudioTrack, setLocalAudioTrack] = useState([]);
     const [raiseHand, setRaiseHand] = useState(false);
+    const [showListChat, setShowListChat] = useState([]);
     const isScreenShare = React.useRef(false);
     const isCamera = React.useRef(false);
     const room = React.useRef(null);
     let listRemoteUserData = [];
     let listRemouteUsers = [];
     let localTracks = [];
+    let listChat = [];
     // let room = React.useRef(null);
     let isJoined = false;
     let connection = null;
     let remoteTracks = {};
     let isVideo = false;
+    let localTrackId = 0;
 
     const options = {
         // serviceUrl:'wss://meet.jit.si/xmpp-websocket',
@@ -143,6 +146,7 @@ const Conferences = (props) => {
         });
         room.current.on(window.JitsiMeetJS.events.conference.PARTICIPANT_PROPERTY_CHANGED, handleParticipantPropertyChange);
         room.current.on(window.JitsiMeetJS.events.conference.USER_LEFT, onUserLeft);
+        room.current.on(window.JitsiMeetJS.events.conference.MESSAGE_RECEIVED, handleReceiveMessage);
         room.current.on(window.JitsiMeetJS.events.conference.TRACK_MUTE_CHANGED, track => {
             console.log(`${track.getType()} - ${track.isMuted()}`);
         });
@@ -166,6 +170,7 @@ const Conferences = (props) => {
 
     const onLocalTracks = (tracks) => {
         localTracks = tracks
+
         localTracks.map((localTrack, index) => {
             localTrack.addEventListener(
                 window.JitsiMeetJS.events.track.TRACK_AUDIO_LEVEL_CHANGED,
@@ -195,6 +200,7 @@ const Conferences = (props) => {
 
     const onRemoteTrack = (track) => {
         if (track.isLocal()) {
+            localTrackId = track.getParticipantId();
             return;
         }
 
@@ -218,7 +224,6 @@ const Conferences = (props) => {
             setRemoteUserData(listRemoteUserData);
             return;
         }
-        console.log('tarck123-55555555555-' + participant);
         let user_val = {id: participant, user: null, isHand: false, videotrack: [], audiotrack: []};
         if(type === 'video') {
             user_val.videotrack = track;
@@ -264,6 +269,7 @@ const Conferences = (props) => {
         localTracks.map((localTrack) => {
             room.current.addTrack(localTrack);
             room.current.setDisplayName(props.match.params.name);
+
         });
     }
 
@@ -297,6 +303,28 @@ const Conferences = (props) => {
         setRemoteUserData(listRemoteUserData);
     }
     
+    const handleReceiveMessage = (id, text, ts) => {
+        let message_data = {type: null, name: "", message: text};
+        if(id === localTrackId) {
+            message_data.type = true;
+            message_data.name = props.match.params.name;
+        } else {
+            message_data.type = false;
+            listRemouteUsers.map((cell) => {
+                if(cell.id === id) {
+                    message_data.name = cell.user.getDisplayName();
+                    return;
+                }
+            });
+        }
+        listChat.push(message_data);
+        setShowListChat(listChat);
+    }
+
+    useEffect(() => {
+        console.log('rrrr-555555555555-' + showListChat.length);
+    }, [showListChat]);
+
     const handleClickChat = () => {
         setShowChat(!showChat);
     }
@@ -377,6 +405,10 @@ const Conferences = (props) => {
         }
     }
 
+    const handleSendMessage = (message) => {
+        room.current.sendTextMessage(message);
+    }
+
     return(
         <div  className={classes.root}>
             <div className={classes.video_area}>
@@ -386,7 +418,9 @@ const Conferences = (props) => {
                 <ControlArea onClickChat={handleClickChat} onClickCamera={handleClickCamera} onClickMic={handleClickMic} onClickScreenShare={handleClickScreenShare} onClickHand={handleClickHand}/>
             </div>
             {
-                <div className={showChat ? classes.show_chat : classes.hide_chat}><ChatComponent name={props.match.params.name} /></div>
+                <div className={showChat ? classes.show_chat : classes.hide_chat}>
+                    <ChatComponent name={props.match.params.name} onSendMessage={handleSendMessage} messagelist={showListChat}/>
+                </div>
             }
         </div>
     )

@@ -11,39 +11,24 @@ export default class ChatComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            messageList: [],
+            messageList: this.props.messagelist,
             message: '',
             name: this.props.name
         };
         this.chatScroll = React.createRef();
-
+        
         this.handleChange = this.handleChange.bind(this);
         this.handlePressKey = this.handlePressKey.bind(this);
         this.close = this.close.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
     }
 
-
     componentDidMount() {
-        // this.props.user.getStreamManager().stream.session.on('signal:chat', (event) => {
-        //     const data = JSON.parse(event.data);
-        //     let messageList = this.state.messageList;
-        //     messageList.push({ connectionId: event.from.connectionId, nickname: data.nickname, message: data.message });
-        //     // const document = window.document;
-        //     setTimeout(() => {
-        //         // const userImg = document.getElementById('userImg-' + (this.state.messageList.length - 1));
-        //         // const video = document.getElementById('video-' + data.streamId);
-        //         // const avatar = userImg.getContext('2d');
-        //         // if (video !== null){
-        //         //     avatar.drawImage(video, 200, 120, 285, 285, 0, 0, 60, 60);
-        //         // } else {
-        //         //     avatar.drawImage('../../../assets/img/userAvatar.svg', 20, 20);
-        //         // }
-        //         this.props.messageReceived();
-        //     }, 50);
-        //     this.setState({ messageList: messageList });
-        //     this.scrollToBottom();
-        // });
+
+    }
+    componentWillReceiveProps(nextProps) {
+        console.log('newlist-555555555-' + nextProps.messagelist);
+        this.setState({messageList: nextProps.messagelist});
     }
 
     handleChange(event) {
@@ -58,16 +43,7 @@ export default class ChatComponent extends Component {
 
     sendMessage() {
         console.log(this.state.message);
-        if (this.props.user && this.state.message) {
-            let message = this.state.message.replace(/ +(?= )/g, '');
-            if (message !== '' && message !== ' ') {
-                const data = { message: message, nickname: this.props.user.getNickname(), streamId: this.props.user.getStreamManager().stream.streamId };
-                this.props.user.getStreamManager().stream.session.signal({
-                    data: JSON.stringify(data),
-                    type: 'chat',
-                });
-            }
-        }
+        this.props.onSendMessage(this.state.message);
         this.setState({ message: '' });
     }
 
@@ -96,15 +72,13 @@ export default class ChatComponent extends Component {
                             <div
                                 key={i}
                                 id="remoteUsers"
-                                className={
-                                    'message' + (data.connectionId !== this.props.user.getConnectionId() ? ' left' : ' right')
-                                }
+                                className={data.type? "message  right" : "message left" }
                             >
                                 <canvas id={'userImg-' + i} width="60" height="60" className="user-img" />
                                 <img src="userAvatar1.png" id={'userImg-' + i} style={{width: '60px', height: '60px'}} className="user-img" alt={'Avatar Img'}/>
                                 <div className="msg-detail">
                                     <div className="msg-info">
-                                        <p> {data.nickname}</p>
+                                        <p> {data.name}</p>
                                     </div>
                                     <div className="msg-content">
                                         <span className="triangle" />
