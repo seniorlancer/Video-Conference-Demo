@@ -43,7 +43,7 @@
 
 .message-wrap {
   padding: 0 15px;
-  height: calc(100% - 80px);
+  height: calc(100% - 120px);
   overflow: auto;
 }
 
@@ -52,15 +52,16 @@
   padding: 7px 0;
 }
 .user-img {
-  position: absolute;
+  position: absolute !important;
   border-radius: 45px;
-  width: 60px;
-  height: 60px;
+  width: 45px !important;
+  height: 45px !important;
   top: 15px;
+  margin-top: 3px;
 }
 
 .msg-detail {
-  width: calc(100% - 65px);
+  width: calc(100% - 50px);
   display: inline-block;
 }
 
@@ -93,7 +94,7 @@ span.triangle {
   border-radius: 2px;
   height: 8px;
   width: 8px;
-  top: 12px;
+  top: 7px;
   display: block;
   -webkit-transform: rotate(45deg);
   transform: rotate(45deg);
@@ -111,7 +112,7 @@ span.triangle {
 }
 
 .message.left .msg-detail {
-  padding-left: 65px;
+  padding-left: 50px;
 }
 
 .message.left .user-img {

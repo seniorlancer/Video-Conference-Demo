@@ -318,12 +318,9 @@ const Conferences = (props) => {
             });
         }
         listChat.push(message_data);
+        setShowListChat([]);
         setShowListChat(listChat);
     }
-
-    useEffect(() => {
-        console.log('rrrr-555555555555-' + showListChat.length);
-    }, [showListChat]);
 
     const handleClickChat = () => {
         setShowChat(!showChat);

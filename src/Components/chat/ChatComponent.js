@@ -3,6 +3,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Fab from '@material-ui/core/Fab';
 import HighlightOff from '@material-ui/icons/HighlightOff';
 import Send from '@material-ui/icons/Send';
+import Avatar from '@material-ui/core/Avatar';
 
 import './ChatComponent.css';
 import { Tooltip } from '@material-ui/core';
@@ -27,7 +28,6 @@ export default class ChatComponent extends Component {
 
     }
     componentWillReceiveProps(nextProps) {
-        console.log('newlist-555555555-' + nextProps.messagelist);
         this.setState({messageList: nextProps.messagelist});
     }
 
@@ -74,8 +74,7 @@ export default class ChatComponent extends Component {
                                 id="remoteUsers"
                                 className={data.type? "message  right" : "message left" }
                             >
-                                <canvas id={'userImg-' + i} width="60" height="60" className="user-img" />
-                                <img src="userAvatar1.png" id={'userImg-' + i} style={{width: '60px', height: '60px'}} className="user-img" alt={'Avatar Img'}/>
+                                <Avatar id={'userImg-' + i} className="user-img">{data.name.charAt(0).toUpperCase()}</Avatar>
                                 <div className="msg-detail">
                                     <div className="msg-info">
                                         <p> {data.name}</p>
