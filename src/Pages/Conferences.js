@@ -61,9 +61,12 @@ const Conferences = (props) => {
     const [localAudioTrack, setLocalAudioTrack] = useState([]);
     const [raiseHand, setRaiseHand] = useState(false);
     const [showListChat, setShowListChat] = useState([]);
+    const [unReadChatting, setUnReadChatting] = useState(0);
     const isScreenShare = React.useRef(false);
     const isCamera = React.useRef(false);
     const room = React.useRef(null);
+    const valShowChat = React.useRef(false);
+
     let listRemoteUserData = [];
     let listRemouteUsers = [];
     let localTracks = [];

@@ -81,11 +81,30 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             color: '#d1dbe8'
         },
+    },
+    div_chatting: {
+        display: 'flex',
+        position: 'relative'
+    },
+    unread_chatting: {
+        width: '25px',
+        height: '25px',
+        borderRadius: '12px',
+        background: '#bf2117',
+        position: 'absolute',
+        right: 10,
+        bottom: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    num_unread_chatting: {
+        color: '#FFFFFF'
     }
 }));
 
 const ControlArea = (props) => {
-    const {onClickChat} = props;
+    const {onClickChat, unReadChatting} = props;
 
     const classes = useStyles();
 
